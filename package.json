@@ -6,6 +6,7 @@
   "private": true,
   "main": "main.js",
   "dependencies": {
+    "babel-eslint": "^7.2.3",
     "expo": "16.0.0",
     "prop-types": "^15.5.8",
     "react": "16.0.0-alpha.6",

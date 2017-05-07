@@ -44,7 +44,26 @@ class App extends React.Component {
         );
     }
 
-    renderNoMoreCards() {}
+    onSwipeLeft(item) {
+        console.log(item, 'was swiped');
+    }
+    onSwipeRight(item) {
+        console.log(item, 'was swiped');
+    }
+
+    renderNoMoreCards() {
+        return (
+            <Card title="All Done!">
+                <Text style={{ marginBottom: 10 }}>
+                    No more content!
+                </Text>
+                <Button
+                    backgroundColor="#03A9F4"
+                    title="Get more!"
+                />
+            </Card>
+        );
+    }
 
     render() {
         return (
@@ -52,6 +71,9 @@ class App extends React.Component {
                 <Deck
                     data={DATA}
                     renderCard={this.renderCard}
+                    onSwipeLeft={this.onSwipeLeft}
+                    onSwipeRight={this.onSwipeRight}
+                    renderNoMoreCards={this.renderNoMoreCards}
                 />
             </View>
         );

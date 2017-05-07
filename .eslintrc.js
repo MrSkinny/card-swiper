@@ -6,6 +6,7 @@ module.exports = {
         "import"
     ],
     "rules": {
+        "no-unused-expressions": 0,
         "indent": [2, 4],
         "class-methods-use-this": 0,
         "jsx-a11y/img-has-alt": 0,
@@ -15,5 +16,6 @@ module.exports = {
         "react/jsx-filename-extension": 0,
         "react/prefer-stateless-function": 1,
         "react/sort-comp": 0,
-    }
+    },
+    "parser": "babel-eslint"
 };

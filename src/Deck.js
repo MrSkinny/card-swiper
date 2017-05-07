@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
 import {
     View,
     Animated,
@@ -8,15 +7,30 @@ import {
     Dimensions,
 } from 'react-native';
 
-const propTypes = {
-    data: PropTypes.array.isRequired,
-    renderCard: PropTypes.func.isRequired,
-};
+import { DATA_SHAPE } from './types';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.40;
+const SWIPE_OUT_DURATION = 250;
 
 class Deck extends Component {
+    static defaultProps = {
+        onSwipeRight: () => {},
+        onSwipeLeft: () => {},
+    };
+
+    static propTypes = {
+        data: PropTypes.arrayOf(DATA_SHAPE).isRequired,
+        renderCard: PropTypes.func.isRequired,
+        onSwipeLeft: PropTypes.func,
+        onSwipeRight: PropTypes.func,
+        renderNoMoreCards: PropTypes.func.isRequired,
+    };
+
+    state = {
+        index: 0,
+    };
+
     constructor(props) {
         super(props);
 
@@ -32,9 +46,9 @@ class Deck extends Component {
             // (cb) called when finger lets go after dragging
             onPanResponderRelease: (_evt, gesture) => {
                 if (gesture.dx > SWIPE_THRESHOLD) {
-                    console.log('swipe right!');
+                    this.forceSwipe('right');
                 } else if (gesture.dx < -SWIPE_THRESHOLD) {
-                    console.log('swipe left!');
+                    this.forceSwipe('left');
                 } else {
                     this.resetPosition();
                 }
@@ -46,6 +60,23 @@ class Deck extends Component {
         Animated.spring(this.position, {
             toValue: { x: 0, y: 0 },
         }).start();
+    }
+
+    forceSwipe(dir) {
+        const x = dir === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
+        Animated.timing(this.position, {
+            toValue: { x, y: 0 },
+            duration: SWIPE_OUT_DURATION,
+        }).start(() => this.onSwipeComplete(dir));
+    }
+
+    onSwipeComplete(dir) {
+        const { onSwipeLeft, onSwipeRight, data } = this.props;
+        const item = data[this.state.index];
+
+        dir === 'right' ? onSwipeRight(item) : onSwipeLeft(item);
+        this.position.setValue({ x: 0, y: 0 });
+        this.setState({ index: this.state.index + 1 });
     }
 
     getCardStyle() {
@@ -61,8 +92,11 @@ class Deck extends Component {
     }
 
     renderCards() {
-        return this.props.data.map((item, index) => {
-            if (index === 0) {
+        if (this.state.index >= this.props.data.length) return this.props.renderNoMoreCards();
+        return this.props.data.map((item, i) => {
+            if (i < this.state.index) return null;
+
+            if (i === this.state.index) {
                 return (
                     <Animated.View
                         key={item.id}
@@ -73,12 +107,12 @@ class Deck extends Component {
                     </Animated.View>
                 );
             }
+
             return this.props.renderCard(item);
         });
     }
 
     render() {
-        const { renderNoMoreCards, data, onSwipeRight, onSwipeLeft } = this.props;
         return (
             <View>
                 {this.renderCards()}
@@ -86,7 +120,5 @@ class Deck extends Component {
         );
     }
 }
-
-Deck.propTypes = propTypes;
 
 export default Deck;
