@@ -14,5 +14,6 @@ module.exports = {
         "react/jsx-indent-props": [2, 4],
         "react/jsx-filename-extension": 0,
         "react/prefer-stateless-function": 1,
+        "react/sort-comp": 0,
     }
 };
