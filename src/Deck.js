@@ -14,6 +14,7 @@ const propTypes = {
 };
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.40;
 
 class Deck extends Component {
     constructor(props) {
@@ -29,8 +30,14 @@ class Deck extends Component {
                 this.position.setValue({ x: gesture.dx, y: gesture.dy });
             },
             // (cb) called when finger lets go after dragging
-            onPanResponderRelease: () => {
-                this.resetPosition();
+            onPanResponderRelease: (_evt, gesture) => {
+                if (gesture.dx > SWIPE_THRESHOLD) {
+                    console.log('swipe right!');
+                } else if (gesture.dx < -SWIPE_THRESHOLD) {
+                    console.log('swipe left!');
+                } else {
+                    this.resetPosition();
+                }
             },
         });
     }
